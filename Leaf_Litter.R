@@ -316,6 +316,7 @@ ReachDaystot_no<-as.factor(paste(LPMacro_noEnvtot$Reach,LPMacro_noEnvtot$Time_Po
 
 #NMDS analysis
 AC_Macroinvertebrate_NMDS<-metaMDS(as.dist(LPMacroComtotbray0))
+#stress=0.14
 stressplot(AC_Macroinvertebrate_NMDS)
 ordiplot(AC_Macroinvertebrate_NMDS, type="n")
 with(AC_Macroinvertebrate_NMDS, points(AC_Macroinvertebrate_NMDS, display="sites", col=leaftaxacolvec[Leaf_Taxatot], pch=19, pt.bg=leaftaxacolvec))
@@ -1078,6 +1079,7 @@ FFGLeaf_Taxatot_no<-as.factor(LeafPackFFG_noEnvtot$Leaf_Type)
 
 #NMDS analysis
 AC_FFG_NMDS<-metaMDS(as.dist(LPFFGComtotbray0))
+#STRESS 0.11
 stressplot(AC_FFG_NMDS)
 ordiplot(AC_FFG_NMDS, type="n")
 with(AC_FFG_NMDS, points(AC_FFG_NMDS, display="sites", col=leaftaxacolvec[FFGLeaf_Taxatot], pch=19))
