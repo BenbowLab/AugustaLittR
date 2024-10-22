@@ -104,11 +104,7 @@ twoleaftaxacolvec<-c("#7fc97f","#386cb0")
 ffgcolvec<-c("#1b9e77","#7570b3","#66a61e","#e7298a","#d95f02")
 
 #Create water chemistry dataset
-<<<<<<< HEAD
 H2OCh<-read.csv("AC_H2O_Chem.csv", sep = ",", header = T )
-=======
-H2OCh<-read.csv("~/Documents/Research/Field_Experiment/AC_H2O_Chem.csv", sep = ",", header = T )
->>>>>>> 68e7660feb9f26b7a116fa7061e771430497fd7f
 anova(lm(Water_Temp_C~Reach+Date, data=H2OCh))
 #date significant
 anova(lm(DO_perc~Reach+Date, data=H2OCh))
@@ -118,11 +114,8 @@ anova(lm(ORP~Reach+Date, data=H2OCh))
 anova(lm(pH~Reach+Date, data=H2OCh))
 #Reach significant
 
-<<<<<<< HEAD
+
 Dens<-read.csv("Densiometer_AC.csv", sep = ",", header = T )
-=======
-Dens<-read.csv("~/Documents/Research/Field_Experiment/Densiometer_AC.csv", sep = ",", header = T )
->>>>>>> 68e7660feb9f26b7a116fa7061e771430497fd7f
 Dens$Sum<-rowSums(Dens[,3:ncol(Dens)])
 Dens$PercShade<-Dens$Sum*0.26
 anova(lm(PercShade~Site..Reach.+Date, data=Dens))
@@ -135,11 +128,7 @@ H2OChmeans<-aggregate(. ~ Reach, H2OCh, function(x) c(mean = mean(x)))
 H2OChse<-aggregate(. ~ Reach, H2OCh, function(x) c(stder = sd(x)/sqrt(sum(!is.na(x)))))
 
 #Upload AFDM datasheet
-<<<<<<< HEAD
 AFDM<-read.csv("AFDM_Data_Sheet.csv", sep = ",", header = T )
-=======
-AFDM<-read.csv("~/Documents/Research/Field_Experiment/AFDM_Data_Sheet.csv", sep = ",", header = T )
->>>>>>> 68e7660feb9f26b7a116fa7061e771430497fd7f
 #Create column for leaf pack dry mass
 AFDM$TotalWetM<-AFDM$D.TotalWetM-AFDM$DishMass
 AFDM$PartialWM<-AFDM$D.PartialWM-AFDM$DishMass
@@ -162,11 +151,7 @@ AFDM$BAFDM<-AFDM$LPDM*AFDM$BPercOrg
 #AverageAFDM
 AFDM$AFDM<-rowMeans(AFDM[c('AAFDM', 'BAFDM')], na.rm=TRUE)
 #Upload metadata
-<<<<<<< HEAD
 LPMetadata<-read.csv("Field_Exp_Sample_Metadata.csv", sep = ",", header = T)
-=======
-LPMetadata<-read.csv("~/Documents/Research/Field_Experiment/Field_Exp_Sample_Metadata.csv", sep = ",", header = T)
->>>>>>> 68e7660feb9f26b7a116fa7061e771430497fd7f
 LPMetadata$Reach<-factor(LPMetadata$Reach, levels=c("US","Gap","DS"))
 
 #Combine metadata with dataset
@@ -248,11 +233,7 @@ ggplot(AFDMsummary, aes(x=Time_Point, y=percAFDMremain, color=Leaf_Type)) +
   facet_wrap(.~Reach)
 
 #Upload kvalue means and se's 
-<<<<<<< HEAD
 KMeans<-read.csv("kvalues.csv", sep = ",", header = T)
-=======
-KMeans<-read.csv("~/Documents/Research/Field_Experiment/kvalues.csv", sep = ",", header = T)
->>>>>>> 68e7660feb9f26b7a116fa7061e771430497fd7f
 KMeans$negk<--1*(KMeans$k)
 KMeans$Reach<-factor(KMeans$Reach, levels=c("Upstream","Gap","Downstream"))
 ggplot(KMeans, aes(x=Reach, y=negk, fill=Leaf_Type)) + 
@@ -269,11 +250,7 @@ ggplot(KMeans, aes(x=Reach, y=negk, fill=Leaf_Type)) +
         strip.text.x = element_text(size = 20))
 
 #Upload historical leaf processing data
-<<<<<<< HEAD
 HistK<-read.csv("Processing_coefficients.csv", sep = ",", header = T)
-=======
-HistK<-read.csv("~/Documents/Research/Field_Experiment/Processing_coefficients.csv", sep = ",", header = T)
->>>>>>> 68e7660feb9f26b7a116fa7061e771430497fd7f
 HistK$Year<-as.factor(HistK$Year)
 HistK[is.na(HistK)] <- 0
 HistK$Location<-revalue(HistK$Location, c("US"="Upstream"))
@@ -292,12 +269,7 @@ ggplot(HistK, aes(x=Year, y=k, color=Taxa)) +
   facet_wrap(.~Location, scales="free_x")
 
 #Upload macroinvertebrate data
-<<<<<<< HEAD
 LPMacros<-read.csv("Leaf_Pack_Macroinvertebrates.csv", sep = ",", header = T)
-=======
-LPMacros<-read.csv("~/Documents/Research/Field_Experiment/Leaf_Pack_Macroinvertebrates.csv", sep = ",", header = T)
->>>>>>> 68e7660feb9f26b7a116fa7061e771430497fd7f
-
 LPMacrosM<-merge(LPMacros, LPMetadata, by="Pack_ID")
 LPMacrosM$rowsum<-rowSums(LPMacrosM[,2:22])
 
@@ -590,10 +562,12 @@ ggplot(Divsummary, aes(x=Time_Point, y=Simp, color=Leaf_Type)) +
         strip.text.x = element_text(size = 18)) +
   facet_wrap(.~Reach)
 
-AC_Inverts_Com_indic_leaf<-data.frame(signassoc(LPMacro_noComtot, cluster=Leaf_Taxatot_no,  mode=0, alternative = "two.sided",control = how(nperm=9999)))
+AC_Inverts_Com_indic_leaf<-data.frame(signassoc(LPMacro_noComtot, cluster=Leaf_Taxatot_no,  mode=0, 
+                                                alternative = "two.sided",control = how(nperm=999)))
 AC_Inverts_Com_indic_leaf_sig<-subset(AC_Inverts_Com_indic_leaf, psidak<=0.05)
 #Chironomidae (cotton), Gammaridae (ash), Nemouridae (ash), Simuliidae(Oak), Taeniopteridae (buckthorn)
-AC_Inverts_Com_reach_indic<-data.frame(signassoc(LPMacro_noComtot, cluster=Reachtot_no,  mode=0, alternative = "two.sided",control = how(nperm=9999)))
+AC_Inverts_Com_reach_indic<-data.frame(signassoc(LPMacro_noComtot, cluster=Reachtot_no,  mode=0, alternative = "two.sided",
+                                                 control = how(nperm=999)))
 AC_Inverts_Com_reach_indic_sig<-subset(AC_Inverts_Com_reach_indic, psidak<=0.05)
 #Chironomid (US), ephemerellidae, Nemouridae, simuliidae Taeniopteridae- gap
 
@@ -782,12 +756,6 @@ leveneTest(boxGam ~ Reach*Leaf_Type*Time_Point_cat, data = LPMacrosM_no)
 #not significant, therefore assume homogeniety of variance
 LPMacrosM_no %>% anova_test(boxGam ~ Reach*Leaf_Type*Time_Point_cat)
 #leaf, time, reach x time, leaf type x time and 3 way all significant
-LPMacrosM_no %>% group_by(Time_Point_cat) %>%
-  anova_test(boxGam ~ Leaf_Type*Reach, error = boxGam.lm)
-#residual sum of squares is 0
-LPMacrosM_no %>% group_by(Time_Point_cat,Leaf_Type) %>%
-  anova_test(boxGam ~ Reach, error = boxGam.lm)
-#residual sum of squares is 0
 #just do overal leaf and reach
 LPMacrosM_no %>% emmeans_test(boxGam ~ Leaf_Type, p.adjust.method = "bonferroni",
                               model = boxGam.lm)
@@ -1932,12 +1900,6 @@ leveneTest(boxGam ~ Reach*Leaf_Type*Time_Point_cat, data = LPMacrosM_no_nc)
 #not significant, therefore assume homogeniety of variance
 LPMacrosM_no_nc %>% anova_test(boxGam ~ Reach*Leaf_Type*Time_Point_cat)
 #leaf, time, reach x time, leaf type x time and 3 way all significant
-LPMacrosM_no_nc %>% group_by(Time_Point_cat) %>%
-  anova_test(boxGam ~ Leaf_Type*Reach, error = boxGam.lm_nc)
-#residual sum of squares is 0
-LPMacrosM_no_nc %>% group_by(Time_Point_cat,Leaf_Type) %>%
-  anova_test(boxGam ~ Reach, error = boxGam.lm_nc)
-#residual sum of squares is 0
 #just do overal leaf and reach
 LPMacrosM_no_nc %>% emmeans_test(boxGam ~ Leaf_Type, p.adjust.method = "bonferroni",
                               model = boxGam.lm_nc)
@@ -2502,7 +2464,7 @@ ggplot(LPFFGmelt_nc, aes(fill=FFG, y=value, x=Reach)) +
 #Use QIIME2 for sequence processing
 
 #Upload unifrac distance table
-AC_16S_uni<-read.csv("~/Documents/Research/Field_Experiment/Microbes/AC_WUnifrac.csv", header = T, check.names=F)
+AC_16S_uni<-read.csv("AC_WUnifrac.csv", header = T, check.names=F)
 
 #Combine distance matrix with environmental variables
 LPMicM<-merge(AC_16S_uni, LPMetadata, by="Pack_ID")
@@ -3046,3 +3008,557 @@ ggplot(poster, aes(x=Time_Point, y=Measurement, color=Leaf_Type)) +
         legend.title=element_text(size=14),legend.text = element_text(size=12),
         strip.text.x = element_text(size = 14),strip.text.y=element_text(size=10),legend.position="bottom") +
   facet_grid(facet~Reach,scales="free_y", labeller = label_wrap_gen(width=17))
+
+
+###############################
+#Microbes
+############################
+
+#Use QIIME2 for sequence processing
+
+#Upload unifrac distance table
+AC_16S_uni<-read.csv("~/Documents/Research/Field_Experiment/Microbes/AC_WUnifrac.csv", header = T, check.names=F)
+
+#Combine distance matrix with environmental variables
+LPMicM<-merge(AC_16S_uni, LPMetadata, by="Pack_ID")
+row.names(LPMicM)<-LPMicM[,1]
+LPMicM<-LPMicM[,-c(1)]
+names(LPMicM)
+AC_16S_uni<-as.matrix(LPMicM[,c(1:138)])
+#UNI-Create overall environmental data matrix for community analysis with uni distances
+LPMicM_env<-LPMicM[,c(139:144)]
+LPMicM_env_R<-LPMicM_env$Reach
+LPMicM_env_LT<-as.factor(LPMicM_env$Leaf_Type)
+
+#UNI-Overall permanova with unifrac distances
+adonis2(as.dist(AC_16S_uni) ~ Leaf_Type*Reach*Days_Exposure, data=LPMicM_env,
+        permutations=999)
+#Leaf type, reach, time, leafxtime and reach x time significant
+
+#Visualize via nmds
+AC_Mic_NMDS<-metaMDS(as.dist(AC_16S_uni))
+#stress 0.1
+
+#Stressplot macroinvertebrate Nmds
+stressplot(AC_Mic_NMDS)
+
+#NMDS plot for Reach
+ordiplot(AC_Mic_NMDS, type="n")
+with(AC_Mic_NMDS, points(AC_Mic_NMDS, display="sites", col=reach_col_vec[LPMicM_env_R], pch=19))
+with(AC_Mic_NMDS, legend("topleft", legend=levels(LPMicM_env_R), bty="n", col=reach_col_vec, pch=19, pt.bg=reach_col_vec))
+with(AC_Mic_NMDS, ordiellipse(AC_Mic_NMDS, LPMicM_env_R, kind="se", conf=0.95, lwd=2, col="#1b9e77", show.groups = "US"))
+with(AC_Mic_NMDS, ordiellipse(AC_Mic_NMDS, LPMicM_env_R, kind="se", conf=0.95, lwd=2, col="#d95f02", show.groups = "Gap"))
+with(AC_Mic_NMDS, ordiellipse(AC_Mic_NMDS, LPMicM_env_R, kind="se", conf=0.95, lwd=2, col="#7570b3", show.groups = "DS"))
+
+#NMDS plot for leaf type
+ordiplot(AC_Mic_NMDS, type="n")
+with(AC_Mic_NMDS, points(AC_Mic_NMDS, display="sites", col=leaftaxacolvec[LPMicM_env_LT], pch=19))
+with(AC_Mic_NMDS, legend("topleft", legend=levels(LPMicM_env_LT), bty="n", col=leaftaxacolvec, pch=19, pt.bg=leaftaxacolvec))
+with(AC_Mic_NMDS, ordiellipse(AC_Mic_NMDS, LPMicM_env_LT, kind="se", conf=0.95, lwd=2, col="#7fc97f", show.groups = "Ash"))
+with(AC_Mic_NMDS, ordiellipse(AC_Mic_NMDS, LPMicM_env_LT, kind="se", conf=0.95, lwd=2, col="#beaed4", show.groups = "Buckthorn"))
+with(AC_Mic_NMDS, ordiellipse(AC_Mic_NMDS, LPMicM_env_LT, kind="se", conf=0.95, lwd=2, col="#fdc086", show.groups = "Cotton"))
+with(AC_Mic_NMDS, ordiellipse(AC_Mic_NMDS, LPMicM_env_LT, kind="se", conf=0.95, lwd=2, col="#386cb0", show.groups = "Oak"))
+
+#Upload family level taxonomy
+AC_16S_f<-read.csv("~/Documents/Research/Field_Experiment/Microbes/AC_f.csv", header=T, check.names=F)
+#Format data frame so the family is row name
+row.names(AC_16S_f)<-AC_16S_f[,1]
+#Delete otu id column, now that otu id is row name
+AC_16S_f$Pack_ID<-NULL
+AC_16S_f_t<-t(AC_16S_f)
+AC_16S_f_t<-data.frame(AC_16S_f_t, check.names = FALSE)
+AC_16S_f_t$Pack_ID<-row.names(AC_16S_f_t)
+#Combine with environmental variables
+AC_16S_f_map <-merge(LPMetadata,AC_16S_f_t, by="Pack_ID")
+names(AC_16S_f_map)
+sort(colSums(AC_16S_f_t[,1:536]))
+#most common family is CComamonadaceae 
+stat.desc(AC_16S_f_t$`k__Bacteria;p__Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Comamonadaceae`)
+#269 +/- 14
+AC_16S_f_map_R<-AC_16S_f_map$Reach
+AC_16S_f_map_L<-AC_16S_f_map$Leaf_Type
+
+#indicator species analysis for reach
+AC_Mic_Com_R_indic<-data.frame(signassoc(AC_16S_f_t[,1:536], cluster=AC_16S_f_map_R,  mode=0, alternative = "two.sided",control = how(nperm=999)))
+AC_Mic_Com_R_indic_sig<-subset(AC_Mic_Com_R_indic, psidak<=0.05)
+#27 indicator families for watershed
+
+#indicator species analysis for leaf type
+AC_Mic_Com_L_indic<-data.frame(signassoc(AC_16S_f_t[,1:536], cluster=AC_16S_f_map_L,  mode=0, alternative = "two.sided",control = how(nperm=999)))
+AC_Mic_Com_L_indic_sig<-subset(AC_Mic_Com_L_indic, psidak<=0.05)
+#122 indicator families for leaf type
+
+#Upload phylogenetic diversity
+AC_16S_fpd<- read.csv("~/Documents/Research/Field_Experiment/Microbes/AC_fpd.csv", header=T)
+#Combine with environmental variables
+AC_16S_fpd_map<-merge(LPMetadata, AC_16S_fpd, by="Pack_ID")
+AC_16S_fpd_map$Time_Point_cat<-as.factor(AC_16S_fpd_map$Time_Point)
+
+#Faith's PD
+range(AC_16S_fpd_map$faith_pd)
+#8.76-54.38
+#summary stats
+AC_16S_fpd_map %>%
+  group_by(Reach, Leaf_Type, Time_Point_cat) %>%
+  get_summary_stats(faith_pd, type = "mean_sd")
+#check for outliers
+AC_16S_fpd_map %>%
+  group_by(Reach, Leaf_Type, Time_Point_cat) %>%
+  identify_outliers(faith_pd)
+#no outliers
+#visualize
+ggboxplot(AC_16S_fpd_map, x = "Reach", y = "faith_pd",
+          color = "Time_Point_cat", palette = "jco",
+          facet.by = "Leaf_Type", short.panel.labs = FALSE)
+#Check model assumptions
+#normality, not enough replicates to do all three at same time
+AC_16S_fpd_map %>%
+  group_by(Reach, Leaf_Type) %>%
+  shapiro_test(faith_pd)
+#normal
+fpd.lm<- lm(faith_pd ~ Reach*Leaf_Type*Time_Point_cat, data = AC_16S_fpd_map)
+ggqqplot(residuals(fpd.lm))
+shapiro_test(residuals(fpd.lm))
+#residuals fall aprox in qqplot, and shapiro test not significant
+#looks good, test homogeniety of variance
+leveneTest(faith_pd ~ Reach*Leaf_Type*Time_Point_cat, data = AC_16S_fpd_map)
+#not significant, therefore assume homogeniety of variance
+res.aov.fpd<- AC_16S_fpd_map %>% anova_test(faith_pd ~ Reach*Leaf_Type*Time_Point_cat)
+res.aov.fpd
+#leaf type, time point, and leaf typextime point significant, so group the data by leaf type and time, and fit  anova
+AC_16S_fpd_map %>% group_by(Leaf_Type) %>%
+  anova_test(faith_pd~ Days_Exposure, error = fpd.lm)
+AC_16S_fpd_map%>% group_by(Time_Point_cat) %>%
+  anova_test(faith_pd ~ Leaf_Type, error = fpd.lm)
+# Pairwise comparisons
+AC_16S_fpd_map %>% group_by(Leaf_Type) %>% emmeans_test(faith_pd ~ Time_Point_cat, 
+                                                        p.adjust.method = "bonferroni",
+                                                        model=fpd.lm)
+AC_16S_fpd_map %>% group_by(Time_Point_cat) %>%
+  emmeans_test(faith_pd ~ Leaf_Type, p.adjust.method = "bonferroni", 
+               model=fpd.lm)
+#emm for non interactions
+AC_16S_fpd_map%>% emmeans_test(faith_pd ~ Leaf_Type, p.adjust.method = "bonferroni")
+#cotton greater than ash and buckthorn, ash and cotton greater than oak
+#See summary statistics for significant groups
+AC_16S_fpd_map_A<-subset(AC_16S_fpd_map, Leaf_Type=="Ash")
+AC_16S_fpd_map_B<-subset(AC_16S_fpd_map, Leaf_Type=="Buckthorn")
+AC_16S_fpd_map_C<-subset(AC_16S_fpd_map, Leaf_Type=="Cotton")
+AC_16S_fpd_map_O<-subset(AC_16S_fpd_map, Leaf_Type=="Oak")
+stat.desc(AC_16S_fpd_map_A$faith_pd)
+stat.desc(AC_16S_fpd_map_B$faith_pd)
+stat.desc(AC_16S_fpd_map_C$faith_pd)
+stat.desc(AC_16S_fpd_map_O$faith_pd)
+
+#visualize reach, leaf type and time
+fpdsummary<-summarySE(AC_16S_fpd_map, measurevar=c("faith_pd"), groupvars=c("Leaf_Type","Time_Point","Reach"), na.rm=TRUE)
+fpdsummary$Time_Point[fpdsummary$Time_Point == 1] <- 8
+fpdsummary$Time_Point[fpdsummary$Time_Point == 2] <- 41
+fpdsummary$Time_Point[fpdsummary$Time_Point == 3] <- 68
+fpdsummary$Time_Point[fpdsummary$Time_Point == 4] <- 98
+fpdsummary$Reach<-revalue(fpdsummary$Reach, c("US"="Upstream"))
+fpdsummary$Reach<-revalue(fpdsummary$Reach, c("DS"="Downstream"))
+
+#plot on y fpd and x axis days exposure
+ggplot(fpdsummary, aes(x=Time_Point, y=faith_pd, color=Leaf_Type)) +
+  geom_line(aes(group=Leaf_Type), size=1.5)+
+  geom_errorbar(aes(ymin=faith_pd-se, ymax=faith_pd+se), width=1) +
+  geom_point(size=1.5) +
+  xlab("Days of Exposure") +
+  ylab("Mean Microbial Phylogenetic Diversity (± SE)")+
+  scale_color_manual(values=leaftaxacolvec,name = "Leaf Type") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=20),axis.title.y=element_text(size=16),
+        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
+        legend.title=element_text(size=20),legend.text = element_text(size=16),
+        strip.text.x = element_text(size = 18)) +
+  facet_wrap(.~Reach)
+
+fpdsummarynr<-summarySE(AC_16S_fpd_map, measurevar=c("faith_pd"), groupvars=c("Leaf_Type","Time_Point"), na.rm=TRUE)
+fpdsummarynr$Time_Point[fpdsummarynr$Time_Point == 1] <- 8
+fpdsummarynr$Time_Point[fpdsummarynr$Time_Point == 2] <- 41
+fpdsummarynr$Time_Point[fpdsummarynr$Time_Point == 3] <- 68
+fpdsummarynr$Time_Point[fpdsummarynr$Time_Point == 4] <- 98
+# plot on y fpd and x days, no facet
+ggplot(fpdsummarynr, aes(x=Time_Point, y=faith_pd, color=Leaf_Type)) +
+  geom_line(aes(group=Leaf_Type), size=1.5)+
+  geom_errorbar(aes(ymin=faith_pd-se, ymax=faith_pd+se), width=1) +
+  geom_point(size=1.5) +
+  xlab("Days of Exposure") +
+  ylab("Mean Microbial Phylogenetic Diversity (± SE)")+
+  scale_color_manual(values=leaftaxacolvec,name = "Leaf Type") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=20),axis.title.y=element_text(size=16),
+        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
+        legend.title=element_text(size=20),legend.text = element_text(size=16),
+        strip.text.x = element_text(size = 18))
+
+#Chao1
+#Upload chao1
+AC_16S_ch<- read.csv("~/Documents/Research/Field_Experiment/Microbes/AC_chao.csv", header=T)
+#Combine with environmental variables
+AC_16S_ch_map<-merge(LPMetadata, AC_16S_ch, by="Pack_ID")
+AC_16S_ch_map$Time_Point_cat<-as.factor(AC_16S_ch_map$Time_Point)
+
+#Chao1
+range(AC_16S_ch_map$chao1)
+#40-903.9
+#summary stats
+AC_16S_ch_map %>%
+  group_by(Reach, Leaf_Type, Time_Point_cat) %>%
+  get_summary_stats(chao1, type = "mean_sd")
+#check for outliers
+AC_16S_ch_map %>%
+  group_by(Reach, Leaf_Type, Time_Point_cat) %>%
+  identify_outliers(chao1)
+#no outliers
+#visualize
+ggboxplot(AC_16S_ch_map, x = "Reach", y = "chao1",
+          color = "Time_Point_cat", palette = "jco",
+          facet.by = "Leaf_Type", short.panel.labs = FALSE)
+#Check model assumptions
+#normality, not enough replicates to do all three at same time
+AC_16S_ch_map %>%
+  group_by(Reach, Leaf_Type) %>%
+  shapiro_test(chao1)
+#normal
+ch.lm<- lm(chao1 ~ Reach*Leaf_Type*Time_Point_cat, data = AC_16S_ch_map)
+ggqqplot(residuals(ch.lm))
+shapiro_test(residuals(ch.lm))
+#residuals fall aprox in qqplot, and shapiro test significant
+#test homogeniety of variance
+leveneTest(chao1 ~ Reach*Leaf_Type*Time_Point_cat, data = AC_16S_ch_map)
+#not significant, therefore assume homogeniety of variance
+res.aov.ch<- AC_16S_ch_map %>% anova_test(chao1 ~ Reach*Leaf_Type*Time_Point_cat)
+res.aov.ch
+#leaf type, time point, and leaf typextime point significant, so group the data by leaf type and time, and fit  anova
+AC_16S_ch_map %>% group_by(Leaf_Type) %>%
+  anova_test(chao1~ Days_Exposure, error = fpd.lm)
+AC_16S_ch_map%>% group_by(Time_Point_cat) %>%
+  anova_test(chao1 ~ Leaf_Type, error = fpd.lm)
+# Pairwise comparisons
+AC_16S_ch_map %>% group_by(Leaf_Type) %>% emmeans_test(chao1 ~ Time_Point_cat, 
+                                                       p.adjust.method = "bonferroni",
+                                                       model=ch.lm)
+AC_16S_ch_map %>% group_by(Time_Point_cat) %>%
+  emmeans_test(chao1 ~ Leaf_Type, p.adjust.method = "bonferroni", 
+               model=ch.lm)
+#emm for non interactions
+AC_16S_ch_map%>% emmeans_test(chao1 ~ Leaf_Type, p.adjust.method = "bonferroni")
+#Cotton>Ash=buckthorn>Oak
+#See summary statistics for significant groups
+AC_16S_ch_map_A<-subset(AC_16S_ch_map, Leaf_Type=="Ash")
+AC_16S_ch_map_B<-subset(AC_16S_ch_map, Leaf_Type=="Buckthorn")
+AC_16S_ch_map_C<-subset(AC_16S_ch_map, Leaf_Type=="Cotton")
+AC_16S_ch_map_O<-subset(AC_16S_ch_map, Leaf_Type=="Oak")
+stat.desc(AC_16S_ch_map_A$chao1)
+stat.desc(AC_16S_ch_map_B$chao1)
+stat.desc(AC_16S_ch_map_C$chao1)
+stat.desc(AC_16S_ch_map_O$chao1)
+
+#visualize reach, leaf type and time
+chsummary<-summarySE(AC_16S_ch_map, measurevar=c("chao1"), groupvars=c("Leaf_Type","Time_Point","Reach"), na.rm=TRUE)
+chsummary$Time_Point[chsummary$Time_Point == 1] <- 8
+chsummary$Time_Point[chsummary$Time_Point == 2] <- 41
+chsummary$Time_Point[chsummary$Time_Point == 3] <- 68
+chsummary$Time_Point[chsummary$Time_Point == 4] <- 98
+chsummary$Reach<-revalue(chsummary$Reach, c("US"="Upstream"))
+chsummary$Reach<-revalue(chsummary$Reach, c("DS"="Downstream"))
+
+#plot on y fpd and x axis days exposure
+ggplot(chsummary, aes(x=Time_Point, y=chao1, color=Leaf_Type)) +
+  geom_line(aes(group=Leaf_Type), size=1.5)+
+  geom_errorbar(aes(ymin=chao1-se, ymax=chao1+se), width=1) +
+  geom_point(size=1.5) +
+  xlab("Days of Exposure") +
+  ylab("Mean Microbial Richness (± SE)")+
+  scale_color_manual(values=leaftaxacolvec,name = "Leaf Type") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=20),axis.title.y=element_text(size=16),
+        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
+        legend.title=element_text(size=20),legend.text = element_text(size=16),
+        strip.text.x = element_text(size = 18)) +
+  facet_wrap(.~Reach)
+
+#now move on to venn diagrams to find unique OTUs introduced in time 0
+#create venn diagram for shared OTUs among leaf type on day 0
+#upload OTU table
+AC_OTU<- read.csv("~/Documents/MSU/Research/Field_Experiment/Microbes/AC_otu_table.csv", header=T,check.names=F)
+names(AC_OTU)
+#Format data frame so the family is row name
+row.names(AC_OTU)<-AC_OTU[,1]
+#Delete otu id column, now that otu id is row name
+AC_OTU$Pack_ID<-NULL
+AC_OTU_t<-t(AC_OTU)
+AC_OTU_t<-data.frame(AC_OTU_t, check.names = FALSE)
+AC_OTU_t$Pack_ID<-row.names(AC_OTU_t)
+#Combine with environmental variables
+AC_OTU_map<-merge(LPMetadata, AC_OTU_t, by="Pack_ID")
+#subset into only time point 0
+AC_OTU_map_0<-subset(AC_OTU_map, Time_Point==0)
+#first list OTU names found in each group
+names(AC_OTU_map_0)
+AC_OTU_map_0_ag_venn<-aggregate(AC_OTU_map_0[8:ncol(AC_OTU_map_0)], 
+                                by=list(Leaf_Type=AC_OTU_map_0$Leaf_Type),
+                                FUN=sum)
+str(AC_OTU_map_0_ag_venn)
+row.names(AC_OTU_map_0_ag_venn)<-AC_OTU_map_0_ag_venn$Leaf_Type
+AC_OTU_map_0_ag_venn$Leaf_Type<-NULL
+row.names(AC_OTU_map_0_ag_venn)
+Ash<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Ash",] > 0]
+Buckthorn<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Buckthorn",] > 0]
+Cotton<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Cotton",] > 0]
+Oak<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Oak",] > 0]
+source_url("http://raw.github.com/nielshanson/mp_tutorial/master/downstream_analysis_r/code/venn_diagram4.r")
+quartz()
+LTVen<-venn_diagram4(Ash, Buckthorn, Cotton, Oak,
+                     "Ash", "Buckthorn", "Cotton", "Oak",
+                     colors=leaftaxacolvec)
+#Each leaf type has unique OTUs
+#visualize without cotton
+source_url("http://raw.github.com/nielshanson/mp_tutorial/master/downstream_analysis_r/code/venn_diagram3.r")
+quartz()
+LTVen_nc<-venn_diagram3(Ash,Buckthorn,Oak, "Ash",
+                        "Buckthorn","Oak",colors=leaftaxacolvec_nc)
+#each leaf type has unique OTUs
+
+##################
+#now do other microbial analyses without cotton
+#################
+LPMIcM_nc<-subset(LPMicM, Leaf_Type!="Cotton")
+names(LPMIcM_nc)
+LPMIcM_nc<- select(LPMIcM_nc, -contains("-C-"))
+names(LPMIcM_nc)
+AC_16S_uni_nc<-as.matrix(LPMIcM_nc[,c(1:106)])
+#UNI-Create overall environmental data matrix for community analysis with uni distances
+LPMicM_env_nc<-LPMIcM_nc[,c(107:112)]
+LPMicM_env_nc$Reach<-revalue(LPMicM_env_nc$Reach, c("US"="Upstream", "DS"="Downstream"))
+LPMicM_env_R_nc<-LPMicM_env_nc$Reach
+LPMicM_env_LT_nc<-droplevels(as.factor(LPMicM_env_nc$Leaf_Type))
+
+#UNI-Overall permanova with unifrac distances
+adonis(as.dist(AC_16S_uni_nc) ~ Leaf_Type*Reach*Days_Exposure, data=LPMicM_env_nc,
+       permutations=9999)
+#Leaf type, reach, time, leafxtime and reach x time significant
+
+#Visualize via nmds
+AC_Mic_NMDS_nc<-metaMDS(as.dist(AC_16S_uni_nc))
+#stress 0.1
+
+#Stressplot microbial Nmds
+stressplot(AC_Mic_NMDS_nc)
+
+#NMDS plot for Reach
+ordiplot(AC_Mic_NMDS_nc, type="n")
+with(AC_Mic_NMDS_nc, points(AC_Mic_NMDS_nc, display="sites", col=reach_col_vec[LPMicM_env_R_nc], pch=19))
+with(AC_Mic_NMDS_nc, legend("topleft", legend=levels(LPMicM_env_R_nc), bty="n", col=reach_col_vec, pch=19, pt.bg=reach_col_vec))
+with(AC_Mic_NMDS_nc, ordiellipse(AC_Mic_NMDS_nc, LPMicM_env_R_nc, kind="se", conf=0.95, lwd=2, col="#1b9e77", show.groups = "Upstream"))
+with(AC_Mic_NMDS_nc, ordiellipse(AC_Mic_NMDS_nc, LPMicM_env_R_nc, kind="se", conf=0.95, lwd=2, col="#d95f02", show.groups = "Gap"))
+with(AC_Mic_NMDS_nc, ordiellipse(AC_Mic_NMDS_nc, LPMicM_env_R_nc, kind="se", conf=0.95, lwd=2, col="#7570b3", show.groups = "Downstream"))
+
+#NMDS plot for leaf type
+ordiplot(AC_Mic_NMDS_nc, type="n")
+with(AC_Mic_NMDS_nc, points(AC_Mic_NMDS_nc, display="sites", col=leaftaxacolvec_nc[LPMicM_env_LT_nc], pch=19))
+with(AC_Mic_NMDS_nc, legend("topleft", legend=levels(LPMicM_env_LT_nc), bty="n", col=leaftaxacolvec_nc, pch=19, pt.bg=leaftaxacolvec_nc))
+with(AC_Mic_NMDS_nc, ordiellipse(AC_Mic_NMDS_nc, LPMicM_env_LT_nc, kind="se", conf=0.95, lwd=2, col="#7fc97f", show.groups = "Ash"))
+with(AC_Mic_NMDS_nc, ordiellipse(AC_Mic_NMDS_nc, LPMicM_env_LT_nc, kind="se", conf=0.95, lwd=2, col="#beaed4", show.groups = "Buckthorn"))
+with(AC_Mic_NMDS_nc, ordiellipse(AC_Mic_NMDS_nc, LPMicM_env_LT_nc, kind="se", conf=0.95, lwd=2, col="#386cb0", show.groups = "Oak"))
+
+#family level taxonomy
+AC_16S_f_map_nc<-subset(AC_16S_f_map, Leaf_Type!="Cotton")
+names(AC_16S_f_map_nc)
+sort(colSums(AC_16S_f_map_nc[,8:543]))
+#most common family is Comamonadaceae 
+stat.desc(AC_16S_f_map_nc$`k__Bacteria;p__Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Comamonadaceae`)
+#261 +/- 18
+AC_16S_f_map_R_nc<-AC_16S_f_map_nc$Reach
+AC_16S_f_map_L_nc<-droplevels(AC_16S_f_map_nc$Leaf_Type)
+
+#indicator species analysis for reach
+AC_Mic_Com_R_indic_nc<-signassoc(AC_16S_f_map_nc[,8:543], cluster=AC_16S_f_map_R_nc,  mode=0, alternative = "two.sided",control = how(nperm=999))
+AC_Mic_Com_R_indic_sig_nc<-subset(AC_Mic_Com_R_indic_nc, psidak<=0.05)
+#23 indicator families for reach, 2 for gap
+#k__Bacteria;p__Actinobacteria;c__Thermoleophilia;o__Solirubrobacterales;f_
+#k__Bacteria;p__Bacteroidetes;c__Sphingobacteriia;o__Sphingobacteriales;f__
+AC_16S_f_map_nc%>%
+  group_by(Reach) %>%
+  get_summary_stats("k__Bacteria;p__Actinobacteria;c__Thermoleophilia;o__Solirubrobacterales;f__", type = "mean_se")
+#lowered in gaps
+AC_16S_f_map_nc%>%
+  group_by(Reach) %>%
+  get_summary_stats("k__Bacteria;p__Bacteroidetes;c__Sphingobacteriia;o__Sphingobacteriales;f__", type = "mean_se")
+#lowered in gaps
+
+#indicator species analysis for leaf type
+AC_Mic_Com_L_indic_nc<-signassoc(AC_16S_f_map_nc[,8:543], cluster=AC_16S_f_map_L_nc,  mode=0, alternative = "two.sided",control = how(nperm=999))
+AC_Mic_Com_L_indic_sig_nc<-subset(AC_Mic_Com_L_indic_nc, psidak<=0.05)
+#48 indicator families for leaf type
+
+#Upload phylogenetic diversity
+AC_16S_fpd_map_nc<-subset(AC_16S_fpd_map, Leaf_Type!="Cotton")
+AC_16S_fpd_map_nc$Leaf_Type<-droplevels(AC_16S_fpd_map_nc$Leaf_Type)
+#Faith's PD
+range(AC_16S_fpd_map_nc$faith_pd)
+#8.76-51.66
+#summary stats
+AC_16S_fpd_map_nc %>%
+  group_by(Reach, Leaf_Type, Time_Point_cat) %>%
+  get_summary_stats(faith_pd, type = "mean_sd")
+#check for outliers
+AC_16S_fpd_map_nc %>%
+  group_by(Reach, Leaf_Type, Time_Point_cat) %>%
+  identify_outliers(faith_pd)
+#no outliers
+#visualize
+ggboxplot(AC_16S_fpd_map_nc, x = "Reach", y = "faith_pd",
+          color = "Time_Point_cat", palette = "jco",
+          facet.by = "Leaf_Type", short.panel.labs = FALSE)
+#Check model assumptions
+#normality, not enough replicates to do all three at same time
+AC_16S_fpd_map_nc %>%
+  group_by(Reach, Leaf_Type) %>%
+  shapiro_test(faith_pd)
+#normal
+fpd.lm_nc<- lm(faith_pd ~ Reach*Leaf_Type*Time_Point_cat, data = AC_16S_fpd_map_nc)
+ggqqplot(residuals(fpd.lm_nc))
+shapiro_test(residuals(fpd.lm_nc))
+#residuals fall aprox in qqplot, and shapiro test not significant
+#looks good, test homogeniety of variance
+leveneTest(faith_pd ~ Reach*Leaf_Type*Time_Point_cat, data = AC_16S_fpd_map_nc)
+#not significant, therefore assume homogeniety of variance
+res.aov.fpd_nc<- AC_16S_fpd_map_nc %>% anova_test(faith_pd ~ Reach*Leaf_Type*Time_Point_cat)
+res.aov.fpd_nc
+#leaf type, time point, and leaf typextime point significant, so group the data by leaf type and time, and fit  anova
+AC_16S_fpd_map_nc %>% group_by(Leaf_Type) %>%
+  anova_test(faith_pd~ Days_Exposure, error = fpd.lm_nc)
+AC_16S_fpd_map_nc%>% group_by(Time_Point_cat) %>%
+  anova_test(faith_pd ~ Leaf_Type, error = fpd.lm_nc)
+# Pairwise comparisons
+AC_16S_fpd_map_nc %>% group_by(Leaf_Type) %>% emmeans_test(faith_pd ~ Time_Point_cat, 
+                                                           p.adjust.method = "bonferroni",
+                                                           model=fpd.lm_nc)
+AC_16S_fpd_map_nc %>% group_by(Time_Point_cat) %>%
+  emmeans_test(faith_pd ~ Leaf_Type, p.adjust.method = "bonferroni", 
+               model=fpd.lm_nc)
+#emm for non interactions
+AC_16S_fpd_map_nc%>% emmeans_test(faith_pd ~ Leaf_Type, p.adjust.method = "bonferroni")
+#(Ash=Buckthorn)>Oak
+#See summary statistics for significant groups
+AC_16S_fpd_map_nc %>%
+  group_by(Leaf_Type) %>%
+  get_summary_stats(faith_pd, type = "mean_se")
+
+#visualize reach, leaf type and time
+fpdsummary_nc<-summarySE(AC_16S_fpd_map_nc, measurevar=c("faith_pd"), groupvars=c("Leaf_Type","Time_Point","Reach"), na.rm=TRUE)
+fpdsummary_nc$Time_Point[fpdsummary_nc$Time_Point == 1] <- 8
+fpdsummary_nc$Time_Point[fpdsummary_nc$Time_Point == 2] <- 41
+fpdsummary_nc$Time_Point[fpdsummary_nc$Time_Point == 3] <- 68
+fpdsummary_nc$Time_Point[fpdsummary_nc$Time_Point == 4] <- 98
+fpdsummary_nc$Reach<-revalue(fpdsummary_nc$Reach, c("US"="Upstream"))
+fpdsummary_nc$Reach<-revalue(fpdsummary_nc$Reach, c("DS"="Downstream"))
+
+#plot on y fpd and x axis days exposure
+ggplot(fpdsummary_nc, aes(x=Time_Point, y=faith_pd, color=Leaf_Type)) +
+  geom_line(aes(group=Leaf_Type), size=1.5)+
+  geom_errorbar(aes(ymin=faith_pd-se, ymax=faith_pd+se), width=1) +
+  geom_point(size=1.5) +
+  xlab("Days of Exposure") +
+  ylab("Mean Microbial Phylogenetic Diversity (± SE)")+
+  scale_color_manual(values=leaftaxacolvec_nc,name = "Leaf Type") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=20),axis.title.y=element_text(size=16),
+        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
+        legend.title=element_text(size=20),legend.text = element_text(size=16),
+        strip.text.x = element_text(size = 18)) +
+  facet_wrap(.~Reach)
+
+#Chao1
+#Upload chao1
+AC_16S_ch_map_nc<-subset(AC_16S_ch_map, Leaf_Type!="Cotton")
+AC_16S_ch_map_nc$Leaf_Type<-droplevels(AC_16S_ch_map_nc$Leaf_Type)
+#Chao1
+range(AC_16S_ch_map_nc$chao1)
+#40-903.9
+#summary stats
+AC_16S_ch_map_nc %>%
+  group_by(Reach, Leaf_Type, Time_Point_cat) %>%
+  get_summary_stats(chao1, type = "mean_sd")
+#check for outliers
+AC_16S_ch_map_nc %>%
+  group_by(Reach, Leaf_Type, Time_Point_cat) %>%
+  identify_outliers(chao1)
+#no outliers
+#visualize
+ggboxplot(AC_16S_ch_map_nc, x = "Reach", y = "chao1",
+          color = "Time_Point_cat", palette = "jco",
+          facet.by = "Leaf_Type", short.panel.labs = FALSE)
+#Check model assumptions
+#normality, not enough replicates to do all three at same time
+AC_16S_ch_map_nc %>%
+  group_by(Reach, Leaf_Type) %>%
+  shapiro_test(chao1)
+#normal
+ch.lm_nc<- lm(chao1 ~ Reach*Leaf_Type*Time_Point_cat, data = AC_16S_ch_map_nc)
+ggqqplot(residuals(ch.lm_nc))
+shapiro_test(residuals(ch.lm_nc))
+#residuals fall aprox in qqplot, and shapiro test significant
+#test homogeniety of variance
+leveneTest(chao1 ~ Reach*Leaf_Type*Time_Point_cat, data = AC_16S_ch_map_nc)
+#not significant, therefore assume homogeniety of variance
+res.aov.ch_nc<- AC_16S_ch_map_nc %>% anova_test(chao1 ~ Reach*Leaf_Type*Time_Point_cat)
+res.aov.ch_nc
+#leaf type and time point significant, so group the data by leaf type and time, and fit  anova
+#emm for non interactions
+AC_16S_ch_map_nc%>% emmeans_test(chao1 ~ Leaf_Type, p.adjust.method = "bonferroni")
+#Ash=buckthorn>Oak
+#See summary statistics for significant groups
+AC_16S_ch_map_nc %>%
+  group_by(Leaf_Type) %>%
+  get_summary_stats(chao1, type = "mean_se")
+
+#visualize reach, leaf type and time
+chsummary_nc<-summarySE(AC_16S_ch_map_nc, measurevar=c("chao1"), groupvars=c("Leaf_Type","Time_Point","Reach"), na.rm=TRUE)
+chsummary_nc$Time_Point[chsummary_nc$Time_Point == 1] <- 8
+chsummary_nc$Time_Point[chsummary_nc$Time_Point == 2] <- 41
+chsummary_nc$Time_Point[chsummary_nc$Time_Point == 3] <- 68
+chsummary_nc$Time_Point[chsummary_nc$Time_Point == 4] <- 98
+chsummary_nc$Reach<-revalue(chsummary_nc$Reach, c("US"="Upstream"))
+chsummary_nc$Reach<-revalue(chsummary_nc$Reach, c("DS"="Downstream"))
+
+#plot on y fpd and x axis days exposure
+ggplot(chsummary_nc, aes(x=Time_Point, y=chao1, color=Leaf_Type)) +
+  geom_line(aes(group=Leaf_Type), size=1.5)+
+  geom_errorbar(aes(ymin=chao1-se, ymax=chao1+se), width=1) +
+  geom_point(size=1.5) +
+  xlab("Days of Exposure") +
+  ylab("Mean Microbial Richness (± SE)")+
+  scale_color_manual(values=leaftaxacolvec_nc,name = "Leaf Type") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=20),axis.title.y=element_text(size=16),
+        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
+        legend.title=element_text(size=20),legend.text = element_text(size=16),
+        strip.text.x = element_text(size = 18)) +
+  facet_wrap(.~Reach)
+
+#Facetted graph for SFS 2021 poster
+chsummary_nc$facet<-rep("Mean Microbial Richness (± SE)", 42)
+names(chsummary_nc)[names(chsummary_nc) == "chao1"] <- "Measurement"
+MRsummary_nc$facet<-rep("Mean Macroinvertebrate Richness (± SE)", 45)
+names(MRsummary_nc)[names(MRsummary_nc) == "Richness"] <- "Measurement"
+AFDMsummary_nc$facet<-rep("Mean %AFDM Remaining (± SE)", 45)
+names(AFDMsummary_nc)[names(AFDMsummary_nc) == "percAFDMremain"] <- "Measurement"
+poster<-rbind(chsummary_nc,MRsummary_nc,AFDMsummary_nc)
+poster$facet<- factor(poster$facet, levels = c("Mean %AFDM Remaining (± SE)", "Mean Microbial Richness (± SE)", "Mean Macroinvertebrate Richness (± SE)"))
+ggplot(poster, aes(x=Time_Point, y=Measurement, color=Leaf_Type)) +
+  geom_line(aes(group=Leaf_Type), size=1.5)+
+  geom_errorbar(aes(ymin=Measurement-se, ymax=Measurement+se), width=7) +
+  geom_point(size=1.5) +
+  xlab("Days of Exposure") +
+  scale_color_manual(values=leaftaxacolvec_nc,name = "Leaf Type") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=14),axis.title.y=element_blank(),
+        axis.text.x=element_text(size=10),axis.text.y = element_text(size=12),
+        legend.title=element_text(size=14),legend.text = element_text(size=12),
+        strip.text.x = element_text(size = 14),strip.text.y=element_text(size=10),legend.position="bottom") +
+  facet_grid(facet~Reach,scales="free_y", labeller = label_wrap_gen(width=17))
+
