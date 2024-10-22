@@ -1,0 +1,10 @@
+Taxa,Year,Location,k,SE,citation
+Oak,1974,US,0.0047,0.0002,"""Hanson et al 1984"""
+Oak,1961,US,0.0043,NA,"""Petersen and Cummins 1974"""
+Ash,1961,US,0.0137,NA,"""Petersen and Cummins 1974"""
+Oak,2019,Gap,0.0404597,0.04049487,"""current study"""
+Ash,2019,Gap,0.0444492,0.018880853,"""current study"""
+Oak,2019,US,0.0421251,0.01888085,"""current study"""
+Ash,2019,US,0.047,0.008,"""current study"""
+Oak,2019,DS,0.0307781,0.03859103,"""current study"""
+Ash,2019,DS,0.0465361,0.018810344,"""current study"""

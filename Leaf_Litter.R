@@ -10,7 +10,6 @@ library(vegan)
 library(MASS)
 library(indicspecies)
 library(funrar)
-library(ecole)
 library(doBy)
 library(pastecs)
 library(e1071) 
@@ -21,6 +20,7 @@ library(emmeans)
 library(tidyverse)
 library(lme4)
 library(reshape)
+library(ecole)
 
 #Functions
 summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95) {
@@ -103,7 +103,7 @@ twoleaftaxacolvec<-c("#7fc97f","#386cb0")
 ffgcolvec<-c("#1b9e77","#7570b3","#66a61e","#e7298a","#d95f02")
 
 #Create water chemistry dataset
-H2OCh<-read.csv("~/Documents/MSU/Research/Field_Experiment/AC_H2O_Chem.csv", sep = ",", header = T )
+H2OCh<-read.csv("AC_H2O_Chem.csv", sep = ",", header = T )
 anova(lm(Water_Temp_C~Reach+Date, data=H2OCh))
 #date significant
 anova(lm(DO_perc~Reach+Date, data=H2OCh))
@@ -113,7 +113,7 @@ anova(lm(ORP~Reach+Date, data=H2OCh))
 anova(lm(pH~Reach+Date, data=H2OCh))
 #Reach significant
 
-Dens<-read.csv("~/Documents/MSU/Research/Field_Experiment/Densiometer_AC.csv", sep = ",", header = T )
+Dens<-read.csv("Densiometer_AC.csv", sep = ",", header = T )
 Dens$Sum<-rowSums(Dens[,3:ncol(Dens)])
 Dens$PercShade<-Dens$Sum*0.26
 anova(lm(PercShade~Site..Reach.+Date, data=Dens))
@@ -126,7 +126,7 @@ H2OChmeans<-aggregate(. ~ Reach, H2OCh, function(x) c(mean = mean(x)))
 H2OChse<-aggregate(. ~ Reach, H2OCh, function(x) c(stder = sd(x)/sqrt(sum(!is.na(x)))))
 
 #Upload AFDM datasheet
-AFDM<-read.csv("~/Documents/MSU/Research/Field_Experiment/AFDM_Data_Sheet.csv", sep = ",", header = T )
+AFDM<-read.csv("AFDM_Data_Sheet.csv", sep = ",", header = T )
 #Create column for leaf pack dry mass
 AFDM$TotalWetM<-AFDM$D.TotalWetM-AFDM$DishMass
 AFDM$PartialWM<-AFDM$D.PartialWM-AFDM$DishMass
@@ -149,7 +149,7 @@ AFDM$BAFDM<-AFDM$LPDM*AFDM$BPercOrg
 #AverageAFDM
 AFDM$AFDM<-rowMeans(AFDM[c('AAFDM', 'BAFDM')], na.rm=TRUE)
 #Upload metadata
-LPMetadata<-read.csv("~/Documents/MSU/Research/Field_Experiment/Field_Exp_Sample_Metadata.csv", sep = ",", header = T)
+LPMetadata<-read.csv("Field_Exp_Sample_Metadata.csv", sep = ",", header = T)
 LPMetadata$Reach<-factor(LPMetadata$Reach, levels=c("US","Gap","DS"))
 
 #Combine metadata with dataset
@@ -231,7 +231,7 @@ ggplot(AFDMsummary, aes(x=Time_Point, y=percAFDMremain, color=Leaf_Type)) +
   facet_wrap(.~Reach)
 
 #Upload kvalue means and se's 
-KMeans<-read.csv("~/Documents/MSU/Research/Field_Experiment/kvalues.csv", sep = ",", header = T)
+KMeans<-read.csv("kvalues.csv", sep = ",", header = T)
 KMeans$negk<--1*(KMeans$k)
 KMeans$Reach<-factor(KMeans$Reach, levels=c("Upstream","Gap","Downstream"))
 ggplot(KMeans, aes(x=Reach, y=negk, fill=Leaf_Type)) + 
@@ -248,7 +248,7 @@ ggplot(KMeans, aes(x=Reach, y=negk, fill=Leaf_Type)) +
         strip.text.x = element_text(size = 20))
 
 #Upload historical leaf processing data
-HistK<-read.csv("~/Documents/MSU/Research/Field_Experiment/Processing_coefficients.csv", sep = ",", header = T)
+HistK<-read.csv("Processing_coefficients.csv", sep = ",", header = T)
 HistK$Year<-as.factor(HistK$Year)
 HistK[is.na(HistK)] <- 0
 HistK$Location<-revalue(HistK$Location, c("US"="Upstream"))
@@ -267,7 +267,7 @@ ggplot(HistK, aes(x=Year, y=k, color=Taxa)) +
   facet_wrap(.~Location, scales="free_x")
 
 #Upload macroinvertebrate data
-LPMacros<-read.csv("~/Documents/MSU/Research/Field_Experiment/Leaf_Pack_Macroinvertebrates.csv", sep = ",", header = T)
+LPMacros<-read.csv("Leaf_Pack_Macroinvertebrates.csv", sep = ",", header = T)
 
 LPMacrosM<-merge(LPMacros, LPMetadata, by="Pack_ID")
 LPMacrosM$rowsum<-rowSums(LPMacrosM[,2:22])
@@ -301,7 +301,7 @@ LPMacro_noRA<-merge(LPMacro_noComRA, LPMacro_noEnvtot, by=0)
 stat.desc(LPMacro_noRA$Taeniopterygidae)
 
 #permanova
-adonis(as.dist(LPMacro_noComtotbray0)~Reach*Leaf_Type*Days_Exposure, data=LPMacro_noEnvtot, permutations=999)
+macperm<-adonis2(as.dist(LPMacro_noComtotbray0)~Reach*Leaf_Type*Days_Exposure, data=LPMacro_noEnvtot, permutations=999)
 #days, reach, leaf type, and reach:leaf type signficant
 
 Reachtot<-droplevels(as.factor(LPMacroEnvtot$Reach))
@@ -560,10 +560,10 @@ ggplot(Divsummary, aes(x=Time_Point, y=Simp, color=Leaf_Type)) +
         strip.text.x = element_text(size = 18)) +
   facet_wrap(.~Reach)
 
-AC_Inverts_Com_indic_leaf<-signassoc(LPMacro_noComtot, cluster=Leaf_Taxatot_no,  mode=0, alternative = "two.sided",control = how(nperm=99999))
+AC_Inverts_Com_indic_leaf<-data.frame(signassoc(LPMacro_noComtot, cluster=Leaf_Taxatot_no,  mode=0, alternative = "two.sided",control = how(nperm=9999)))
 AC_Inverts_Com_indic_leaf_sig<-subset(AC_Inverts_Com_indic_leaf, psidak<=0.05)
 #Chironomidae (cotton), Gammaridae (ash), Nemouridae (ash), Simuliidae(Oak), Taeniopteridae (buckthorn)
-AC_Inverts_Com_reach_indic<-signassoc(LPMacro_noComtot, cluster=Reachtot_no,  mode=0, alternative = "two.sided",control = how(nperm=99999))
+AC_Inverts_Com_reach_indic<-data.frame(signassoc(LPMacro_noComtot, cluster=Reachtot_no,  mode=0, alternative = "two.sided",control = how(nperm=9999)))
 AC_Inverts_Com_reach_indic_sig<-subset(AC_Inverts_Com_reach_indic, psidak<=0.05)
 #Chironomid (US), ephemerellidae, Nemouridae, simuliidae Taeniopteridae- gap
 
@@ -636,10 +636,6 @@ stat.desc(LPMacrosM_no_G_A$Chironomidae)
 stat.desc(LPMacrosM_no_G_B$Chironomidae)
 stat.desc(LPMacrosM_no_G_C$Chironomidae)
 stat.desc(LPMacrosM_no_G_O$Chironomidae)
-stat.desc(LPMacrosM_no_A$Chironomidae)
-stat.desc(LPMacrosM_no_B$Chironomidae)
-stat.desc(LPMacrosM_no_C$Chironomidae)
-stat.desc(LPMacrosM_no_O$Chironomidae)
 
 #Chironomids gap cotton
 ChiSumm<-summarySE(LPMacrosM, measurevar=c("Chironomidae"), groupvars=c("Leaf_Type","Time_Point","Reach"), na.rm=TRUE)
@@ -778,10 +774,6 @@ LPMacrosM_no %>%
   group_by(Leaf_Type) %>%
   get_summary_stats(Gammaridae, type = "mean_se")
 
-stat.desc(LPMacrosM_no_A$Gammaridae)
-stat.desc(LPMacrosM_no_B$Gammaridae)
-stat.desc(LPMacrosM_no_C$Gammaridae)
-stat.desc(LPMacrosM_no_O$Gammaridae)
 
 #Gammardiae indicates ash leaves
 GamSumm<-summarySE(LPMacrosM, measurevar=c("Gammaridae"), groupvars=c("Leaf_Type","Time_Point","Reach"), na.rm=TRUE)
@@ -851,10 +843,6 @@ NTPLT<-LPMacrosM_no %>% group_by(Time_Point_cat) %>%
 LPMacrosM_no %>%
   group_by(Leaf_Type) %>%
   get_summary_stats(Nemouridae, type = "mean_se")
-stat.desc(LPMacrosM_no_A$Nemouridae)
-stat.desc(LPMacrosM_no_B$Nemouridae)
-stat.desc(LPMacrosM_no_C$Nemouridae)
-stat.desc(LPMacrosM_no_O$Nemouridae)
 stat.desc(LPMacrosM_no_US$Nemouridae)
 stat.desc(LPMacrosM_no_G$Nemouridae)
 stat.desc(LPMacrosM_no_DS$Nemouridae)
@@ -924,10 +912,6 @@ LPMacrosM_no %>% group_by(Time_Point_cat) %>%
 STPLYR<-LPMacrosM_no %>% group_by(Time_Point_cat, Leaf_Type) %>%
   emmeans_test(boxSim ~ Reach, p.adjust.method = "bonferroni", model = boxSim.lm)
 
-stat.desc(LPMacrosM_no_A$Simuliidae)
-stat.desc(LPMacrosM_no_B$Simuliidae)
-stat.desc(LPMacrosM_no_C$Simuliidae)
-stat.desc(LPMacrosM_no_O$Simuliidae)
 stat.desc(LPMacrosM_no_US$Simuliidae)
 stat.desc(LPMacrosM_no_G$Simuliidae)
 stat.desc(LPMacrosM_no_DS$Simuliidae)
@@ -998,10 +982,6 @@ LPMacrosM_no %>% group_by(Time_Point_cat) %>%
 TTPLT<-LPMacrosM_no %>% group_by(Time_Point_cat) %>%
   emmeans_test(boxTa ~ Leaf_Type, p.adjust.method = "bonferroni", model = boxTa.lm)
 
-stat.desc(LPMacrosM_no_A$Taeniopterygidae)
-stat.desc(LPMacrosM_no_B$Taeniopterygidae)
-stat.desc(LPMacrosM_no_C$Taeniopterygidae)
-stat.desc(LPMacrosM_no_O$Taeniopterygidae)
 stat.desc(LPMacrosM_no_US$Taeniopterygidae)
 stat.desc(LPMacrosM_no_G$Taeniopterygidae)
 stat.desc(LPMacrosM_no_DS$Taeniopterygidae)
@@ -1035,7 +1015,7 @@ ggplot(TaenSumm, aes(x=Time_Point, y=Taeniopterygidae, color=Leaf_Type)) +
 LPMacrosmelt<- melt(LPMacros, id=c("Pack_ID")) 
 names(LPMacrosmelt)[names(LPMacrosmelt) == "variable"] <- "Taxa"
 #Combine FFG with dataset
-MacroFFGs<-read.csv("~/Documents/MSU/Research/Field_Experiment/AC_Macro_FFGs.csv", sep = ",", header = T)
+MacroFFGs<-read.csv("AC_Macro_FFGs.csv", sep = ",", header = T)
 LeafPackMacrosMFFG<-merge(LPMacrosmelt, MacroFFGs, by="Taxa")
 str(LeafPackMacrosMFFG)
 LPMacrosFFG<-cast(LeafPackMacrosMFFG, Pack_ID~FFG, sum)
@@ -1067,7 +1047,7 @@ LeafPackFFG_noEnvtot<-LeafPackFFG_no[,c(1,7:ncol(LeafPackFFG_no))]
 LeafPackFFG_noRA<-merge(LeafPackFFG_noComRA, LeafPackFFG_noEnvtot, by=0)
 
 #permanova
-adonis(as.dist(LeafPackFFG_noComtotbray0)~Reach*Leaf_Type*Days_Exposure, data=LeafPackFFG_noEnvtot, permutations=9999)
+adonis2(as.dist(LeafPackFFG_noComtotbray0)~Reach*Leaf_Type*Days_Exposure, data=LeafPackFFG_noEnvtot, permutations=999)
 #days, reach, leaf type signficant
 
 FFGReachtot<-droplevels(as.factor(LPFFGEnvtot$Reach))
@@ -1096,10 +1076,12 @@ with(AC_FFG_NMDS, ordiellipse(AC_FFG_NMDS, Reachtot, kind="se", conf=0.95, lwd=2
 with(AC_FFG_NMDS, ordiellipse(AC_FFG_NMDS, Reachtot, kind="se", conf=0.95, lwd=2, col="#d95f02", show.groups = "Gap"))
 with(AC_FFG_NMDS, ordiellipse(AC_FFG_NMDS, Reachtot, kind="se", conf=0.95, lwd=2, col="#7570b3", show.groups = "Downstream"))
 
-AC_FFG_Com_indic_leaf<-signassoc(LeafPackFFG_noComtot, cluster=FFGLeaf_Taxatot_no,  mode=0, alternative = "two.sided",control = how(nperm=99999))
+AC_FFG_Com_indic_leaf<-data.frame(signassoc(LeafPackFFG_noComtot, cluster=FFGLeaf_Taxatot_no,  mode=0, 
+                                            alternative = "two.sided",control = how(nperm=999)))
 AC_FFG_Com_indic_leaf_sig<-subset(AC_FFG_Com_indic_leaf, psidak<=0.05)
 #shredder ash
-AC_FFG_Com_reach_indic<-signassoc(LeafPackFFG_noComtot, cluster=FFGReachtot_no,  mode=0, alternative = "two.sided",control = how(nperm=99999))
+AC_FFG_Com_reach_indic<-data.frame(signassoc(LeafPackFFG_noComtot, cluster=FFGReachtot_no,  mode=0, 
+                                             alternative = "two.sided",control = how(nperm=999)))
 AC_FFG_Com_reach_indic_sig<-subset(AC_FFG_Com_reach_indic, psidak<=0.05)
 #collector filt, shredder gap, gatherer us
 
@@ -1457,7 +1439,7 @@ ggplot(AFDMsummary_nc, aes(x=Time_Point, y=percAFDMremain, color=Leaf_Type)) +
   facet_wrap(.~Reach)
 
 #Upload kvalue means and se's 
-KMeans<-read.csv("~/Documents/MSU/Research/Field_Experiment/kvalues.csv", sep = ",", header = T)
+KMeans<-read.csv("kvalues.csv", sep = ",", header = T)
 KMeans$negk<--1*(KMeans$k)
 KMeans$Reach<-factor(KMeans$Reach, levels=c("Upstream","Gap","Downstream"))
 KMeans_nc<-subset(KMeans, Leaf_Type!="Cotton")
@@ -1506,7 +1488,7 @@ stat.desc(LPMacro_noRA_nc$Taeniopterygidae)
 #0.21 +/- 0.03
 
 #permanova
-adonis(as.dist(LPMacro_noComtotbray0_nc)~Reach*Leaf_Type*Days_Exposure, data=LPMacro_noEnvtot_nc, permutations=999)
+adonis2(as.dist(LPMacro_noComtotbray0_nc)~Reach*Leaf_Type*Days_Exposure, data=LPMacro_noEnvtot_nc, permutations=999)
 #days, reach, and leaf type signficant
 
 Reachtot_nc<-droplevels(as.factor(LPMacroEnvtot_nc$Reach))
@@ -1750,10 +1732,12 @@ ggplot(Divsummary_nc, aes(x=Time_Point, y=Simp, color=Leaf_Type)) +
         strip.text.x = element_text(size = 18)) +
   facet_wrap(.~Reach)
 
-AC_Inverts_Com_indic_leaf_nc<-signassoc(LPMacro_noComtot_nc, cluster=Leaf_Taxatot_no_nc,  mode=0, alternative = "two.sided",control = how(nperm=999))
+AC_Inverts_Com_indic_leaf_nc<-data.frame(signassoc(LPMacro_noComtot_nc, cluster=Leaf_Taxatot_no_nc,  
+                                                   mode=0, alternative = "two.sided",control = how(nperm=999)))
 AC_Inverts_Com_indic_leaf_sig_nc<-subset(AC_Inverts_Com_indic_leaf_nc, psidak<=0.05)
 #Gammaridae (ash), Nemouridae (ash), Taeniopteridae (buckthorn)
-AC_Inverts_Com_reach_indic_nc<-signassoc(LPMacro_noComtot_nc, cluster=Reachtot_no_nc,  mode=0, alternative = "two.sided",control = how(nperm=999))
+AC_Inverts_Com_reach_indic_nc<-data.frame(signassoc(LPMacro_noComtot_nc, cluster=Reachtot_no_nc,  mode=0, 
+                                                    alternative = "two.sided",control = how(nperm=999)))
 AC_Inverts_Com_reach_indic_sig_nc<-subset(AC_Inverts_Com_reach_indic_nc, psidak<=0.05)
 #Chironomid (US), ephemerellidae, Nemouridae, simuliidae Taeniopteridae- gap
 
@@ -2195,7 +2179,7 @@ LeafPackFFG_noEnvtot_nc<-LeafPackFFG_no_nc[,c(1,7:ncol(LeafPackFFG_no_nc))]
 LeafPackFFG_noRA_nc<-merge(LeafPackFFG_noComRA_nc, LeafPackFFG_noEnvtot_nc, by=0)
 
 #permanova
-adonis(as.dist(LeafPackFFG_noComtotbray0_nc)~Reach*Leaf_Type*Days_Exposure, data=LeafPackFFG_noEnvtot_nc, permutations=9999)
+adonis2(as.dist(LeafPackFFG_noComtotbray0_nc)~Reach*Leaf_Type*Days_Exposure, data=LeafPackFFG_noEnvtot_nc, permutations=9999)
 #reach, leaf type signficant
 
 FFGReachtot_nc<-droplevels(as.factor(LPFFGEnvtot_nc$Reach))
@@ -2223,10 +2207,12 @@ with(AC_FFG_NMDS_nc, ordiellipse(AC_FFG_NMDS_nc, Reachtot_nc, kind="se", conf=0.
 with(AC_FFG_NMDS_nc, ordiellipse(AC_FFG_NMDS_nc, Reachtot_nc, kind="se", conf=0.95, lwd=2, col="#d95f02", show.groups = "Gap"))
 with(AC_FFG_NMDS_nc, ordiellipse(AC_FFG_NMDS_nc, Reachtot_nc, kind="se", conf=0.95, lwd=2, col="#7570b3", show.groups = "Downstream"))
 
-AC_FFG_Com_indic_leaf_nc<-signassoc(LeafPackFFG_noComtot_nc, cluster=FFGLeaf_Taxatot_no_nc,  mode=0, alternative = "two.sided",control = how(nperm=99999))
+AC_FFG_Com_indic_leaf_nc<-data.frame(signassoc(LeafPackFFG_noComtot_nc, cluster=FFGLeaf_Taxatot_no_nc,  mode=0, 
+                                               alternative = "two.sided",control = how(nperm=999)))
 AC_FFG_Com_indic_leaf_sig_nc<-subset(AC_FFG_Com_indic_leaf_nc, psidak<=0.05)
 #shredder buckthorn
-AC_FFG_Com_reach_indic_nc<-signassoc(LeafPackFFG_noComtot_nc, cluster=FFGReachtot_no_nc,  mode=0, alternative = "two.sided",control = how(nperm=99999))
+AC_FFG_Com_reach_indic_nc<-data.frame(signassoc(LeafPackFFG_noComtot_nc, cluster=FFGReachtot_no_nc,  mode=0, 
+                                                alternative = "two.sided",control = how(nperm=999)))
 AC_FFG_Com_reach_indic_sig_nc<-subset(AC_FFG_Com_reach_indic_nc, psidak<=0.05)
 #collector filt, shredder gap, gatherer us
 
