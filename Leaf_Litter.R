@@ -20,11 +20,8 @@ library(emmeans)
 library(tidyverse)
 library(lme4)
 library(reshape)
-<<<<<<< HEAD
 library(ecole)
-=======
 library(devtools)
->>>>>>> 68e7660feb9f26b7a116fa7061e771430497fd7f
 
 #Functions
 summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95) {
