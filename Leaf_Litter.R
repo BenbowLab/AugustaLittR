@@ -2172,7 +2172,7 @@ LeafPackFFG_noEnvtot_nc<-LeafPackFFG_no_nc[,c(1,7:ncol(LeafPackFFG_no_nc))]
 LeafPackFFG_noRA_nc<-merge(LeafPackFFG_noComRA_nc, LeafPackFFG_noEnvtot_nc, by=0)
 
 #permanova
-adonis2(as.dist(LeafPackFFG_noComtotbray0_nc)~Reach*Leaf_Type*Days_Exposure, data=LeafPackFFG_noEnvtot_nc, permutations=9999)
+adonis2(as.dist(LeafPackFFG_noComtotbray0_nc)~Reach*Leaf_Type*Days_Exposure, data=LeafPackFFG_noEnvtot_nc, permutations=999)
 #reach, leaf type signficant
 
 FFGReachtot_nc<-droplevels(as.factor(LPFFGEnvtot_nc$Reach))
@@ -2507,7 +2507,7 @@ with(AC_Mic_NMDS, ordiellipse(AC_Mic_NMDS, LPMicM_env_LT, kind="se", conf=0.95, 
 with(AC_Mic_NMDS, ordiellipse(AC_Mic_NMDS, LPMicM_env_LT, kind="se", conf=0.95, lwd=2, col="#386cb0", show.groups = "Oak"))
 
 #Upload family level taxonomy
-AC_16S_f<-read.csv("~/Documents/Research/Field_Experiment/Microbes/AC_f.csv", header=T, check.names=F)
+AC_16S_f<-read.csv("AC_f.csv", header=T, check.names=F)
 #Format data frame so the family is row name
 row.names(AC_16S_f)<-AC_16S_f[,1]
 #Delete otu id column, now that otu id is row name
@@ -2526,7 +2526,8 @@ AC_16S_f_map_R<-AC_16S_f_map$Reach
 AC_16S_f_map_L<-AC_16S_f_map$Leaf_Type
 
 #indicator species analysis for reach
-AC_Mic_Com_R_indic<-data.frame(signassoc(AC_16S_f_t[,1:536], cluster=AC_16S_f_map_R,  mode=0, alternative = "two.sided",control = how(nperm=999)))
+AC_Mic_Com_R_indic<-data.frame(signassoc(AC_16S_f_t[,1:536], cluster=AC_16S_f_map_R,  mode=0, alternative = "two.sided",
+                                         control = how(nperm=999)))
 AC_Mic_Com_R_indic_sig<-subset(AC_Mic_Com_R_indic, psidak<=0.05)
 #27 indicator families for watershed
 
@@ -2536,7 +2537,7 @@ AC_Mic_Com_L_indic_sig<-subset(AC_Mic_Com_L_indic, psidak<=0.05)
 #122 indicator families for leaf type
 
 #Upload phylogenetic diversity
-AC_16S_fpd<- read.csv("~/Documents/Research/Field_Experiment/Microbes/AC_fpd.csv", header=T)
+AC_16S_fpd<- read.csv("AC_fpd.csv", header=T)
 #Combine with environmental variables
 AC_16S_fpd_map<-merge(LPMetadata, AC_16S_fpd, by="Pack_ID")
 AC_16S_fpd_map$Time_Point_cat<-as.factor(AC_16S_fpd_map$Time_Point)
@@ -2578,15 +2579,17 @@ AC_16S_fpd_map %>% group_by(Leaf_Type) %>%
 AC_16S_fpd_map%>% group_by(Time_Point_cat) %>%
   anova_test(faith_pd ~ Leaf_Type, error = fpd.lm)
 # Pairwise comparisons
-AC_16S_fpd_map %>% group_by(Leaf_Type) %>% emmeans_test(faith_pd ~ Time_Point_cat, 
+AC_16S_fpd_leafxtimecat<-AC_16S_fpd_map %>% group_by(Leaf_Type) %>% emmeans_test(faith_pd ~ Time_Point_cat, 
                                                       p.adjust.method = "bonferroni",
                                                       model=fpd.lm)
-AC_16S_fpd_map %>% group_by(Time_Point_cat) %>%
+AC_16S_fpd_timecatxleaf<-AC_16S_fpd_map %>% group_by(Time_Point_cat) %>%
   emmeans_test(faith_pd ~ Leaf_Type, p.adjust.method = "bonferroni", 
                model=fpd.lm)
 #emm for non interactions
 AC_16S_fpd_map%>% emmeans_test(faith_pd ~ Leaf_Type, p.adjust.method = "bonferroni")
 #cotton greater than ash and buckthorn, ash and cotton greater than oak
+AC_16S_fpd_map%>% emmeans_test(faith_pd ~ Time_Point_cat, p.adjust.method = "bonferroni")
+#0<1=2=3=4
 #See summary statistics for significant groups
 AC_16S_fpd_map_A<-subset(AC_16S_fpd_map, Leaf_Type=="Ash")
 AC_16S_fpd_map_B<-subset(AC_16S_fpd_map, Leaf_Type=="Buckthorn")
@@ -2596,6 +2599,16 @@ stat.desc(AC_16S_fpd_map_A$faith_pd)
 stat.desc(AC_16S_fpd_map_B$faith_pd)
 stat.desc(AC_16S_fpd_map_C$faith_pd)
 stat.desc(AC_16S_fpd_map_O$faith_pd)
+AC_16S_fpd_map_T0<-subset(AC_16S_fpd_map, Time_Point_cat=="0")
+AC_16S_fpd_map_T1<-subset(AC_16S_fpd_map, Time_Point_cat=="1")
+AC_16S_fpd_map_T2<-subset(AC_16S_fpd_map, Time_Point_cat=="2")
+AC_16S_fpd_map_T3<-subset(AC_16S_fpd_map, Time_Point_cat=="3")
+AC_16S_fpd_map_T4<-subset(AC_16S_fpd_map, Time_Point_cat=="4")
+stat.desc(AC_16S_fpd_map_T0$faith_pd)
+stat.desc(AC_16S_fpd_map_T1$faith_pd)
+stat.desc(AC_16S_fpd_map_T2$faith_pd)
+stat.desc(AC_16S_fpd_map_T3$faith_pd)
+stat.desc(AC_16S_fpd_map_T4$faith_pd)
 
 #visualize reach, leaf type and time
 fpdsummary<-summarySE(AC_16S_fpd_map, measurevar=c("faith_pd"), groupvars=c("Leaf_Type","Time_Point","Reach"), na.rm=TRUE)
@@ -2642,7 +2655,7 @@ ggplot(fpdsummarynr, aes(x=Time_Point, y=faith_pd, color=Leaf_Type)) +
 
 #Chao1
 #Upload chao1
-AC_16S_ch<- read.csv("~/Documents/Research/Field_Experiment/Microbes/AC_chao.csv", header=T)
+AC_16S_ch<- read.csv("AC_chao.csv", header=T)
 #Combine with environmental variables
 AC_16S_ch_map<-merge(LPMetadata, AC_16S_ch, by="Pack_ID")
 AC_16S_ch_map$Time_Point_cat<-as.factor(AC_16S_ch_map$Time_Point)
@@ -2687,12 +2700,14 @@ AC_16S_ch_map%>% group_by(Time_Point_cat) %>%
 AC_16S_ch_map %>% group_by(Leaf_Type) %>% emmeans_test(chao1 ~ Time_Point_cat, 
                                                         p.adjust.method = "bonferroni",
                                                         model=ch.lm)
-AC_16S_ch_map %>% group_by(Time_Point_cat) %>%
+AC_16S_ch_timexleaf<-AC_16S_ch_map %>% group_by(Time_Point_cat) %>%
   emmeans_test(chao1 ~ Leaf_Type, p.adjust.method = "bonferroni", 
                model=ch.lm)
 #emm for non interactions
 AC_16S_ch_map%>% emmeans_test(chao1 ~ Leaf_Type, p.adjust.method = "bonferroni")
 #Cotton>Ash=buckthorn>Oak
+AC_16S_ch_map%>% emmeans_test(chao1 ~ Time_Point_cat, p.adjust.method = "bonferroni")
+#0<1=2=3=4
 #See summary statistics for significant groups
 AC_16S_ch_map_A<-subset(AC_16S_ch_map, Leaf_Type=="Ash")
 AC_16S_ch_map_B<-subset(AC_16S_ch_map, Leaf_Type=="Buckthorn")
@@ -2730,7 +2745,7 @@ ggplot(chsummary, aes(x=Time_Point, y=chao1, color=Leaf_Type)) +
 #now move on to venn diagrams to find unique OTUs introduced in time 0
 #create venn diagram for shared OTUs among leaf type on day 0
 #upload OTU table
-AC_OTU<- read.csv("~/Documents/MSU/Research/Field_Experiment/Microbes/AC_otu_table.csv", header=T,check.names=F)
+AC_OTU<- read.csv("AC_otu_table.csv", header=T,check.names=F)
 names(AC_OTU)
 #Format data frame so the family is row name
 row.names(AC_OTU)<-AC_OTU[,1]
@@ -2757,7 +2772,6 @@ Buckthorn<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Buckthorn",] > 0
 Cotton<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Cotton",] > 0]
 Oak<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Oak",] > 0]
 source_url("http://raw.github.com/nielshanson/mp_tutorial/master/downstream_analysis_r/code/venn_diagram4.r")
-quartz()
 LTVen<-venn_diagram4(Ash, Buckthorn, Cotton, Oak,
                       "Ash", "Buckthorn", "Cotton", "Oak",
                       colors=leaftaxacolvec)
@@ -2785,7 +2799,7 @@ LPMicM_env_LT_nc<-droplevels(as.factor(LPMicM_env_nc$Leaf_Type))
 
 #UNI-Overall permanova with unifrac distances
 adonis(as.dist(AC_16S_uni_nc) ~ Leaf_Type*Reach*Days_Exposure, data=LPMicM_env_nc,
-       permutations=9999)
+       permutations=999)
 #Leaf type, reach, time, leafxtime and reach x time significant
 
 #Visualize via nmds
@@ -3338,7 +3352,7 @@ LPMicM_env_LT_nc<-droplevels(as.factor(LPMicM_env_nc$Leaf_Type))
 
 #UNI-Overall permanova with unifrac distances
 adonis(as.dist(AC_16S_uni_nc) ~ Leaf_Type*Reach*Days_Exposure, data=LPMicM_env_nc,
-       permutations=9999)
+       permutations=999)
 #Leaf type, reach, time, leafxtime and reach x time significant
 
 #Visualize via nmds
