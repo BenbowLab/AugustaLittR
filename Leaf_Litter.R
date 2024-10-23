@@ -2842,12 +2842,15 @@ names(LPMIcM_nc)
 AC_16S_uni_nc<-as.matrix(LPMIcM_nc[,c(1:106)])
 #UNI-Create overall environmental data matrix for community analysis with uni distances
 LPMicM_env_nc<-LPMIcM_nc[,c(107:112)]
-LPMicM_env_nc$Reach<-revalue(LPMicM_env_nc$Reach, c("US"="Upstream", "DS"="Downstream"))
+LPMicM_env_nc$Reach<-as.factor(revalue(LPMicM_env_nc$Reach, c("US"="Upstream", "DS"="Downstream")))
 LPMicM_env_R_nc<-LPMicM_env_nc$Reach
 LPMicM_env_LT_nc<-droplevels(as.factor(LPMicM_env_nc$Leaf_Type))
+LPMicM_env_nc$Days_Exposure<-as.numeric(LPMicM_env_nc$Days_Exposure)
+LPMicM_env_nc$Leaf_Type<-droplevels(as.factor(LPMicM_env_nc$Leaf_Type))
+
 
 #UNI-Overall permanova with unifrac distances
-adonis(as.dist(AC_16S_uni_nc) ~ Leaf_Type*Reach*Days_Exposure, data=LPMicM_env_nc,
+bactncadonis<-adonis2(as.dist(AC_16S_uni_nc) ~ Reach*Leaf_Type*Days_Exposure, data=LPMicM_env_nc, by="terms",
        permutations=999)
 #Leaf type, reach, time, leafxtime and reach x time significant
 
@@ -2876,37 +2879,38 @@ with(AC_Mic_NMDS_nc, ordiellipse(AC_Mic_NMDS_nc, LPMicM_env_LT_nc, kind="se", co
 
 #family level taxonomy
 AC_16S_f_map_nc<-subset(AC_16S_f_map, Leaf_Type!="Cotton")
+AC_16S_f_map_nc_n0<-AC_16S_f_map_nc[8:543][, which(colSums(AC_16S_f_map_nc[8:543]) != 0)]
 names(AC_16S_f_map_nc)
 sort(colSums(AC_16S_f_map_nc[,8:543]))
 #most common family is Comamonadaceae 
 stat.desc(AC_16S_f_map_nc$`k__Bacteria;p__Proteobacteria;c__Betaproteobacteria;o__Burkholderiales;f__Comamonadaceae`)
 #261 +/- 18
 AC_16S_f_map_R_nc<-AC_16S_f_map_nc$Reach
-AC_16S_f_map_L_nc<-droplevels(AC_16S_f_map_nc$Leaf_Type)
+AC_16S_f_map_L_nc<-droplevels(as.factor(AC_16S_f_map_nc$Leaf_Type))
 
 #indicator species analysis for reach
-AC_Mic_Com_R_indic_nc<-signassoc(AC_16S_f_map_nc[,8:543], cluster=AC_16S_f_map_R_nc,  mode=0, alternative = "two.sided",control = how(nperm=999))
+AC_Mic_Com_R_indic_nc<-data.frame(signassoc(AC_16S_f_map_nc[,8:543], 
+                                           cluster=AC_16S_f_map_R_nc,  
+                                           mode=0, alternative = "two.sided",
+                                           control = how(nperm=999)))
 AC_Mic_Com_R_indic_sig_nc<-subset(AC_Mic_Com_R_indic_nc, psidak<=0.05)
 #23 indicator families for reach, 2 for gap
 #k__Bacteria;p__Actinobacteria;c__Thermoleophilia;o__Solirubrobacterales;f_
 #k__Bacteria;p__Bacteroidetes;c__Sphingobacteriia;o__Sphingobacteriales;f__
-AC_16S_f_map_nc%>%
-  group_by(Reach) %>%
-  get_summary_stats("k__Bacteria;p__Actinobacteria;c__Thermoleophilia;o__Solirubrobacterales;f__", type = "mean_se")
-#lowered in gaps
-AC_16S_f_map_nc%>%
-  group_by(Reach) %>%
-  get_summary_stats("k__Bacteria;p__Bacteroidetes;c__Sphingobacteriia;o__Sphingobacteriales;f__", type = "mean_se")
-#lowered in gaps
 
 #indicator species analysis for leaf type
-AC_Mic_Com_L_indic_nc<-signassoc(AC_16S_f_map_nc[,8:543], cluster=AC_16S_f_map_L_nc,  mode=0, alternative = "two.sided",control = how(nperm=999))
+AC_Mic_Com_L_indic_nc<-data.frame(signassoc(AC_16S_f_map_nc[,8:543], 
+                                            cluster=AC_16S_f_map_L_nc,
+                                            mode=0, alternative = "two.sided",
+                                            control = how(nperm=999)))
 AC_Mic_Com_L_indic_sig_nc<-subset(AC_Mic_Com_L_indic_nc, psidak<=0.05)
 #48 indicator families for leaf type
 
+#Try again with a higher taxonomic level
+
 #Upload phylogenetic diversity
 AC_16S_fpd_map_nc<-subset(AC_16S_fpd_map, Leaf_Type!="Cotton")
-AC_16S_fpd_map_nc$Leaf_Type<-droplevels(AC_16S_fpd_map_nc$Leaf_Type)
+AC_16S_fpd_map_nc$Leaf_Type<-droplevels(as.factor(AC_16S_fpd_map_nc$Leaf_Type))
 #Faith's PD
 range(AC_16S_fpd_map_nc$faith_pd)
 #8.76-51.66
@@ -2947,16 +2951,22 @@ AC_16S_fpd_map_nc%>% group_by(Time_Point_cat) %>%
 AC_16S_fpd_map_nc %>% group_by(Leaf_Type) %>% emmeans_test(faith_pd ~ Time_Point_cat, 
                                                         p.adjust.method = "bonferroni",
                                                         model=fpd.lm_nc)
-AC_16S_fpd_map_nc %>% group_by(Time_Point_cat) %>%
+AC_16S_fpd_nc_TPxLTAOV<-AC_16S_fpd_map_nc %>% group_by(Time_Point_cat) %>%
   emmeans_test(faith_pd ~ Leaf_Type, p.adjust.method = "bonferroni", 
                model=fpd.lm_nc)
 #emm for non interactions
 AC_16S_fpd_map_nc%>% emmeans_test(faith_pd ~ Leaf_Type, p.adjust.method = "bonferroni")
 #(Ash=Buckthorn)>Oak
+AC_16S_fpd_map_nc%>% emmeans_test(faith_pd ~ Time_Point_cat, p.adjust.method = "bonferroni")
+#0<(1=3=4)
 #See summary statistics for significant groups
 AC_16S_fpd_map_nc %>%
   group_by(Leaf_Type) %>%
   get_summary_stats(faith_pd, type = "mean_se")
+AC_16S_fpd_map_nc %>%
+  group_by(Time_Point_cat) %>%
+  get_summary_stats(faith_pd, type = "mean_se")
+
 
 #visualize reach, leaf type and time
 fpdsummary_nc<-summarySE(AC_16S_fpd_map_nc, measurevar=c("faith_pd"), groupvars=c("Leaf_Type","Time_Point","Reach"), na.rm=TRUE)
@@ -2985,7 +2995,7 @@ ggplot(fpdsummary_nc, aes(x=Time_Point, y=faith_pd, color=Leaf_Type)) +
 #Chao1
 #Upload chao1
 AC_16S_ch_map_nc<-subset(AC_16S_ch_map, Leaf_Type!="Cotton")
-AC_16S_ch_map_nc$Leaf_Type<-droplevels(AC_16S_ch_map_nc$Leaf_Type)
+AC_16S_ch_map_nc$Leaf_Type<-droplevels(as.factor(AC_16S_ch_map_nc$Leaf_Type))
 #Chao1
 range(AC_16S_ch_map_nc$chao1)
 #40-903.9
@@ -3021,9 +3031,14 @@ res.aov.ch_nc
 #emm for non interactions
 AC_16S_ch_map_nc%>% emmeans_test(chao1 ~ Leaf_Type, p.adjust.method = "bonferroni")
 #Ash=buckthorn>Oak
+AC_16S_ch_map_nc%>% emmeans_test(chao1 ~ Time_Point_cat, p.adjust.method = "bonferroni")
+#0<1=2=3=4
 #See summary statistics for significant groups
 AC_16S_ch_map_nc %>%
   group_by(Leaf_Type) %>%
+  get_summary_stats(chao1, type = "mean_se")
+AC_16S_ch_map_nc %>%
+  group_by(Time_Point_cat) %>%
   get_summary_stats(chao1, type = "mean_se")
 
 #visualize reach, leaf type and time
@@ -3034,7 +3049,8 @@ chsummary_nc$Time_Point[chsummary_nc$Time_Point == 3] <- 68
 chsummary_nc$Time_Point[chsummary_nc$Time_Point == 4] <- 98
 chsummary_nc$Reach<-revalue(chsummary_nc$Reach, c("US"="Upstream"))
 chsummary_nc$Reach<-revalue(chsummary_nc$Reach, c("DS"="Downstream"))
-
+sum(chsummary_nc$N)
+#106
 #plot on y fpd and x axis days exposure
 ggplot(chsummary_nc, aes(x=Time_Point, y=chao1, color=Leaf_Type)) +
   geom_line(aes(group=Leaf_Type), size=1.5)+
