@@ -2767,21 +2767,70 @@ str(AC_OTU_map_0_ag_venn)
 row.names(AC_OTU_map_0_ag_venn)<-AC_OTU_map_0_ag_venn$Leaf_Type
 AC_OTU_map_0_ag_venn$Leaf_Type<-NULL
 row.names(AC_OTU_map_0_ag_venn)
-Ash<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Ash",] > 0]
-Buckthorn<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Buckthorn",] > 0]
-Cotton<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Cotton",] > 0]
-Oak<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Oak",] > 0]
-source_url("http://raw.github.com/nielshanson/mp_tutorial/master/downstream_analysis_r/code/venn_diagram4.r")
-LTVen<-venn_diagram4(Ash, Buckthorn, Cotton, Oak,
+Ash_0<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Ash",] > 0]
+Buckthorn_0<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Buckthorn",] > 0]
+Cotton_0<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Cotton",] > 0]
+Oak_0<-colnames(AC_OTU_map_0_ag_venn)[AC_OTU_map_0_ag_venn["Oak",] > 0]
+sournce_url("http://raw.github.com/nielshanson/mp_tutorial/master/downstream_analysis_r/code/venn_diagram4.r")
+LTVen<-ven_diagram4(Ash_0, Buckthorn_0, Cotton_0, Oak_0,
                       "Ash", "Buckthorn", "Cotton", "Oak",
                       colors=leaftaxacolvec)
 #Each leaf type has unique OTUs
 #visualize without cotton
 source_url("http://raw.github.com/nielshanson/mp_tutorial/master/downstream_analysis_r/code/venn_diagram3.r")
-quartz()
-LTVen_nc<-venn_diagram3(Ash,Buckthorn,Oak, "Ash",
+LTVen_nc<-venn_diagram3(Ash_0,Buckthorn_0,Oak_0, "Ash",
                        "Buckthorn","Oak",colors=leaftaxacolvec_nc)
 #each leaf type has unique OTUs
+#See if Ash ASVs persist
+AshIntroASVs<-LTVen$Ash_only
+str(AC_OTU_map)
+AC_OTU_map_AshIntro<-AC_OTU_map[,c(1:7, which(names(AC_OTU_map) %in% AshIntroASVs))]
+AC_OTU_map_AshIntro$RowSum<-rowSums(AC_OTU_map_AshIntro[8:ncol(AC_OTU_map_AshIntro)])/1500
+UAshIntroSE<-summarySE(AC_OTU_map_AshIntro, measurevar="RowSum", groupvars=c("Leaf_Type","Time_Point"))
+
+#now visualize these unique ASVs
+ggplot(subset(UAshIntroSE, Leaf_Type!="Cotton"), aes(x=Days_Exposure, y=RowSum, color=Leaf_Type)) + 
+  geom_line(aes(group=Leaf_Type), size=1.5)+
+  geom_errorbar(aes(ymin=RowSum-se, ymax=RowSum+se), width=1) +
+  geom_point(size=1.5) +
+  xlab("Days of Exposure") +
+  ylab("Mean Ash Introduced ASV Relative Abundance (± SE)")+
+  scale_color_manual(values=leaftaxacolvec_nc,name = "Leaf Type") +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title.x=element_text(size=20),axis.title.y=element_text(size=16),
+        axis.text.x=element_text(size=14),axis.text.y = element_text(size=14),
+        legend.title=element_text(size=20),legend.text = element_text(size=16),
+        strip.text.x = element_text(size = 18))
+  
+#Find out how many unique ASV's persisted
+AC_OTU_map_AshIntro_persist<-subset(AC_OTU_map_AshIntro, Time_Point=="4")
+sort(colSums(AC_OTU_map_AshIntro_persist[8:334]))
+AC_OTU_map_AshIntro_persistAsh<-subset(AC_OTU_map_AshIntro, Time_Point=="4" & Leaf_Type=="Ash")
+sort(colSums(AC_OTU_map_AshIntro_persistAsh[8:334]))
+
+#find out their relative abundance
+AC_OTU_map_AshIntro<-AC_OTU_map[,c(1:7, which(names(AC_OTU_map) %in% AshIntroASVs))]
+stat.desc(rowSums(AC_OTU_map_AshIntro[8:16])/1500)
+
+#For all time points
+AC_OTU_map_ag_venn<-aggregate(AC_OTU_map[8:ncol(AC_OTU_map)], 
+                                by=list(Leaf_Type=AC_OTU_map$Leaf_Type),
+                                FUN=sum)
+str(AC_OTU_map_ag_venn)
+row.names(AC_OTU_map_ag_venn)<-AC_OTU_map_ag_venn$Leaf_Type
+AC_OTU_map_ag_venn$Leaf_Type<-NULL
+row.names(AC_OTU_map_ag_venn)
+Ash<-colnames(AC_OTU_map_ag_venn)[AC_OTU_map_ag_venn["Ash",] > 0]
+Buckthorn<-colnames(AC_OTU_map_ag_venn)[AC_OTU_map_ag_venn["Buckthorn",] > 0]
+Cotton<-colnames(AC_OTU_map_ag_venn)[AC_OTU_map_ag_venn["Cotton",] > 0]
+Oak<-colnames(AC_OTU_map_ag_venn)[AC_OTU_map_ag_venn["Oak",] > 0]
+source_url("http://raw.github.com/nielshanson/mp_tutorial/master/downstream_analysis_r/code/venn_diagram4.r")
+LTVen<-venn_diagram4(Ash, Buckthorn, Cotton, Oak,
+                    "Ash", "Buckthorn", "Cotton", "Oak",
+                    colors=leaftaxacolvec)
+#Each leaf type has unique OTUs
+
+
 
 ##################
 #now do other microbial analyses without cotton
