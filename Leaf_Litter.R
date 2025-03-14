@@ -2529,7 +2529,11 @@ AC_16S_f_map_L<-AC_16S_f_map$Leaf_Type
 AC_Mic_Com_R_indic<-data.frame(signassoc(AC_16S_f_t[,1:536], cluster=AC_16S_f_map_R,  mode=0, alternative = "two.sided",
                                          control = how(nperm=999)))
 AC_Mic_Com_R_indic_sig<-subset(AC_Mic_Com_R_indic, psidak<=0.05)
-#27 indicator families for watershed
+#27 indicator families for reach
+#Find which are highest abundance
+AC_16S_f_t_reachindic<-AC_16S_f_t[,c(which(names(AC_16S_f_t) %in% rownames(AC_Mic_Com_R_indic_sig)))]
+sort(colSums(AC_16S_f_t_reachindic))
+
 
 #indicator species analysis for leaf type
 AC_Mic_Com_L_indic<-data.frame(signassoc(AC_16S_f_t[,1:536], cluster=AC_16S_f_map_L,  mode=0, alternative = "two.sided",control = how(nperm=999)))
@@ -3139,7 +3143,7 @@ with(AC_Mic_NMDS, ordiellipse(AC_Mic_NMDS, LPMicM_env_LT, kind="se", conf=0.95, 
 with(AC_Mic_NMDS, ordiellipse(AC_Mic_NMDS, LPMicM_env_LT, kind="se", conf=0.95, lwd=2, col="#386cb0", show.groups = "Oak"))
 
 #Upload family level taxonomy
-AC_16S_f<-read.csv("~/Documents/Research/Field_Experiment/Microbes/AC_f.csv", header=T, check.names=F)
+AC_16S_f<-read.csv("AC_f.csv", header=T, check.names=F)
 #Format data frame so the family is row name
 row.names(AC_16S_f)<-AC_16S_f[,1]
 #Delete otu id column, now that otu id is row name
@@ -3160,7 +3164,10 @@ AC_16S_f_map_L<-AC_16S_f_map$Leaf_Type
 #indicator species analysis for reach
 AC_Mic_Com_R_indic<-data.frame(signassoc(AC_16S_f_t[,1:536], cluster=AC_16S_f_map_R,  mode=0, alternative = "two.sided",control = how(nperm=999)))
 AC_Mic_Com_R_indic_sig<-subset(AC_Mic_Com_R_indic, psidak<=0.05)
-#27 indicator families for watershed
+#27 indicator families for reach
+
+#find out which are most abundant:
+
 
 #indicator species analysis for leaf type
 AC_Mic_Com_L_indic<-data.frame(signassoc(AC_16S_f_t[,1:536], cluster=AC_16S_f_map_L,  mode=0, alternative = "two.sided",control = how(nperm=999)))
